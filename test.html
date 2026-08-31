@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <input id="email" type="text" placeholder="Email"><br>
+  <input id="pass" type="password" placeholder="Password"><br>
+  <button id="signup">Sign Up</button>
+  <button id="login">Log In</button>
+  <button id="logout">Logout</button>
+  <button id="google">Sign in with Google</button>
+  <div id="status"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyASraZCVBuAjz3bF7Q1N5EEn3rhurVqnjk",
+      authDomain: "ourdiary-f64ef.firebaseapp.com",
+      projectId: "ourdiary-f64ef",
+      storageBucket: "ourdiary-f64ef.firebasestorage.app",
+      messagingSenderId: "651473810928",
+      appId: "1:651473810928:web:be63cb5a155da410ae5935",
+      measurementId: "G-0SGNZ60DYL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    document.getElementById('signup').onclick = async () => {
+      const email = document.getElementById('email').value.trim();
+      const pass = document.getElementById('pass').value;
+      document.getElementById('status').textContent = `Trying signup with: "${email}" / "${pass}"`;
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        document.getElementById('status').textContent = 'Signed up!';
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error: ' + err.message;
+      }
+    };
+    document.getElementById('login').onclick = async () => {
+      const email = document.getElementById('email').value.trim();
+      const pass = document.getElementById('pass').value;
+      document.getElementById('status').textContent = `Trying login with: "${email}" / "${pass}"`;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        document.getElementById('status').textContent = 'Logged in!';
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error: ' + err.message;
+      }
+    };
+    document.getElementById('logout').onclick = () => signOut(auth);
+    document.getElementById('google').onclick = async () => {
+      document.getElementById('status').textContent = 'Google sign‑in popup…';
+      try {
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider);
+        document.getElementById('status').textContent = 'Google sign‑in OK: ' + result.user.email;
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error: ' + err.message;
+      }
+    };
+    onAuthStateChanged(auth, user => {
+      if (user) document.getElementById('status').textContent += ' (User: ' + user.email + ')';
+      else document.getElementById('status').textContent += ' (Signed out)';
+    });
+  </script>
+</body>
+</html>

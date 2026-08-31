@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Romantic Couple Diary</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #5c4a3d;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      transition: background 0.3s;
+    }
+    body.theme-classic { background: #5c4a3d; }
+    body.theme-romantic { background: #9b4e5e; }
+    body.theme-night { background: #1e1e1e; }
+    body.theme-forest { background: #2d5a27; }
+    body.theme-ocean { background: #1a3b4e; }
+    body.theme-sunset { background: #b55a3a; }
+    body.theme-lavender { background: #6a4e7b; }
+
+    .desk {
+      max-width: 950px;
+      width: 100%;
+      background: #7c6a5a;
+      border-radius: 30px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 2px 8px rgba(255,255,255,0.2);
+      padding: 30px 20px 10px;
+      transition: background 0.3s;
+    }
+    body.theme-romantic .desk { background: #c48b9d; }
+    body.theme-night .desk { background: #2d2d2d; }
+    body.theme-forest .desk { background: #3c6e37; }
+    body.theme-ocean .desk { background: #2a4f63; }
+    body.theme-sunset .desk { background: #c57d5a; }
+    body.theme-lavender .desk { background: #8e6ba0; }
+
+    .login-screen { display: flex; flex-direction: column; align-items: center; gap: 30px; padding: 40px 20px; }
+    .login-title { color: #faf3e8; font-size: 2rem; }
+    .login-forms { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; }
+    .login-box {
+      background: #faf3e8; border-radius: 20px; padding: 25px; width: 300px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .login-box h3 { color: #4e3e33; margin-bottom: 15px; }
+    .login-box input[type="email"],
+    .login-box input[type="password"],
+    .login-box input[type="text"] {
+      width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 10px;
+      border: 1px solid #c4b59a; font-size: 1rem;
+    }
+    .login-box button {
+      width: 100%; padding: 10px; border: none;
+      border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px;
+    }
+    .btn-primary { background: #8f7a66; color: white; }
+    .btn-primary:hover { background: #6b5d4f; }
+    .btn-google { background: #4285F4; color: white; }
+    .btn-facebook { background: #1877F2; color: white; }
+    .btn-github { background: #24292e; color: white; }
+    .btn-microsoft { background: #00a4ef; color: white; }
+    .btn-twitter { background: #1DA1F2; color: white; }
+    .btn-yahoo { background: #720e9e; color: white; }
+    .btn-apple { background: #000; color: white; }
+    .btn-phone { background: #34a853; color: white; }
+    .btn-anon { background: #f9a825; color: white; }
+
+    .login-box label.upload-label {
+      display: block; background: #d4c3aa; padding: 8px 12px; border-radius: 20px;
+      text-align: center; cursor: pointer; font-weight: bold; color: #4e3e33; margin-bottom: 10px;
+    }
+    .avatar-preview-small {
+      width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin: 0 auto 10px;
+      border: 3px solid white; display: none;
+    }
+    .error { color: #b63e3e; font-size: 0.9rem; margin-top: 5px; }
+
+    .hidden { display: none !important; }
+    .diary-container { background: #faf3e8; border-radius: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.2); padding: 30px; min-height: 500px; transition: background 0.3s; }
+    body.theme-romantic .diary-container { background: #f9eef0; }
+    body.theme-night .diary-container { background: #3a3a3a; color: #eee; }
+    body.theme-forest .diary-container { background: #e3f0e1; }
+    body.theme-ocean .diary-container { background: #e2f0f8; }
+    body.theme-sunset .diary-container { background: #f9ece6; }
+    body.theme-lavender .diary-container { background: #f1eef5; }
+
+    .user-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 10px; background: #d9c8b4; border-radius: 20px; transition: background 0.3s; }
+    body.theme-romantic .user-bar { background: #e3cfd7; }
+    body.theme-night .user-bar { background: #4a4a4a; }
+    body.theme-forest .user-bar { background: #c8ddc4; }
+    body.theme-ocean .user-bar { background: #c4d9e5; }
+    body.theme-sunset .user-bar { background: #e8cfc2; }
+    body.theme-lavender .user-bar { background: #d9cee0; }
+
+    .user-info { display: flex; align-items: center; gap: 10px; }
+    .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #c4b09b; overflow: hidden; border: 2px solid white; display: flex; align-items: center; justify-content: center; }
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .logout-btn { background: #8f7a66; color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+    .settings-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; }
+
+    .partner-section {
+      background: #faf3e8; border-radius: 20px; padding: 20px; margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; transition: background 0.3s;
+    }
+    body.theme-romantic .partner-section { background: #f9eef0; }
+    body.theme-night .partner-section { background: #3a3a3a; }
+    body.theme-forest .partner-section { background: #e3f0e1; }
+    body.theme-ocean .partner-section { background: #e2f0f8; }
+    body.theme-sunset .partner-section { background: #f9ece6; }
+    body.theme-lavender .partner-section { background: #f1eef5; }
+
+    .partner-card { display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap; }
+    .partner-avatar { width: 50px; height: 50px; border-radius: 50%; background: #c4b09b; overflow: hidden; border: 3px solid white; display: flex; align-items: center; justify-content: center; }
+    .partner-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .partner-name { font-weight: bold; font-size: 1.2rem; color: #4e3e33; }
+    .heart-icon { font-size: 1.5rem; color: #e31b23; }
+
+    .theme-picker { margin-top: 15px; text-align: center; }
+    .theme-picker select { padding: 8px 12px; border-radius: 20px; border: 1px solid #c4b59a; background: #fffef7; font-weight: bold; color: #4e3e33; }
+
+    .special-dates-section { background: #faf3e8; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: background 0.3s; }
+    body.theme-romantic .special-dates-section { background: #f9eef0; }
+    body.theme-night .special-dates-section { background: #3a3a3a; }
+    body.theme-forest .special-dates-section { background: #e3f0e1; }
+    body.theme-ocean .special-dates-section { background: #e2f0f8; }
+    body.theme-sunset .special-dates-section { background: #f9ece6; }
+    body.theme-lavender .special-dates-section { background: #f1eef5; }
+
+    .special-dates-toggle { display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: bold; color: #4e3e33; user-select: none; }
+    .special-dates-list { margin-top: 15px; }
+    .special-date-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fffef7; border-radius: 12px; margin-bottom: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .special-date-title { font-weight: bold; color: #4e3e33; }
+    .special-date-countdown { font-size: 0.9rem; color: #e31b23; font-weight: bold; }
+    .special-date-delete { background: none; border: none; color: #c7a99b; cursor: pointer; font-size: 1rem; }
+    .add-special-date-form { display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+    .add-special-date-form input { padding: 8px 12px; border-radius: 8px; border: 1px solid #c4b59a; background: #fffef7; }
+    .add-special-date-form button { background: #b98b5f; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+
+    .game-section { background: #faf3e8; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: background 0.3s; }
+    body.theme-romantic .game-section { background: #f9eef0; }
+    body.theme-night .game-section { background: #3a3a3a; }
+    body.theme-forest .game-section { background: #e3f0e1; }
+    body.theme-ocean .game-section { background: #e2f0f8; }
+    body.theme-sunset .game-section { background: #f9ece6; }
+    body.theme-lavender .game-section { background: #f1eef5; }
+
+    .game-toggle { display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: bold; color: #4e3e33; user-select: none; }
+    .game-content { margin-top: 15px; }
+    .game-set, .game-guess { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+    .game-set input, .game-guess input { padding: 8px 12px; border-radius: 8px; border: 1px solid #c4b59a; background: #fffef7; width: 100px; }
+    .game-set button, .game-guess button { background: #b98b5f; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+    .game-hints { margin-top: 10px; max-height: 200px; overflow-y: auto; }
+    .game-hint-item { padding: 5px 10px; background: #fffef7; border-radius: 8px; margin-bottom: 5px; }
+
+    .view-toggle { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
+    .view-btn { background: #d9c8b4; border: none; padding: 10px 24px; border-radius: 30px; font-weight: bold; cursor: pointer; color: #4e3e33; font-size: 1rem; }
+    .view-btn.active { background: #faf3e8; border: 2px solid #8f7a66; }
+
+    .paper-page {
+      background: #fffef7;
+      background-image: repeating-linear-gradient(#e5e0d5 0px, #e5e0d5 1px, transparent 1px, transparent 28px);
+      background-size: 100% 29px;
+      padding: 30px 40px;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin-bottom: 25px;
+      font-family: 'Caveat', cursive;
+      font-size: 1.4rem; line-height: 29px;
+      color: #2e241b; word-wrap: break-word;
+      position: relative; transition: background 0.3s;
+    }
+    body.theme-night .paper-page { background: #4a4a4a; color: #eee; background-image: repeating-linear-gradient(#555 0px, #555 1px, transparent 1px, transparent 28px); }
+    body.theme-forest .paper-page { background: #f0f7ee; }
+    body.theme-ocean .paper-page { background: #eaf3f8; }
+    body.theme-sunset .paper-page { background: #fdf2ed; }
+    body.theme-lavender .paper-page { background: #f6f3f9; }
+    .paper-page img { max-width: 100%; max-height: 300px; border-radius: 8px; margin: 12px 0; box-shadow: 2px 2px 8px rgba(0,0,0,0.3); border: 6px solid white; transform: rotate(-1deg); }
+    .shared-badge { position: absolute; top: 10px; right: 15px; background: #e31b23; color: white; padding: 3px 10px; border-radius: 10px; font-size: 0.8rem; font-family: 'Segoe UI', sans-serif; }
+    .page-meta { font-size: 1rem; color: #8b7355; display: flex; justify-content: space-between; border-bottom: 1px dashed #c4b59a; padding-bottom: 6px; margin-bottom: 10px; font-family: 'Segoe UI', sans-serif; }
+    .author-tag { font-weight: bold; color: #6b4e3d; }
+    .mood-icon { font-size: 1.6rem; margin-right: 6px; }
+    .new-page-form { background: #fffef7; background-image: repeating-linear-gradient(#e5e0d5 0px, #e5e0d5 1px, transparent 1px, transparent 28px); background-size: 100% 29px; padding: 25px 35px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); margin-bottom: 30px; transition: background 0.3s; }
+    body.theme-night .new-page-form { background: #4a4a4a; background-image: repeating-linear-gradient(#555 0px, #555 1px, transparent 1px, transparent 28px); }
+    body.theme-forest .new-page-form { background: #f0f7ee; }
+    body.theme-ocean .new-page-form { background: #eaf3f8; }
+    body.theme-sunset .new-page-form { background: #fdf2ed; }
+    body.theme-lavender .new-page-form { background: #f6f3f9; }
+    .new-page-form textarea { width: 100%; border: none; background: transparent; font-family: 'Caveat', cursive; font-size: 1.5rem; line-height: 29px; resize: vertical; outline: none; color: #2e241b; min-height: 100px; }
+    .new-page-form textarea::placeholder { color: #b9a689; font-style: italic; }
+    .form-actions { display: flex; gap: 15px; align-items: center; margin-top: 15px; flex-wrap: wrap; }
+    .upload-label { background: #d4c3aa; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: bold; color: #4e3e33; }
+    .upload-label:hover { background: #c4af91; }
+    .save-page-btn { background: #8f7a66; color: white; border: none; padding: 10px 24px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+    .share-checkbox { display: flex; align-items: center; gap: 5px; font-weight: bold; color: #4e3e33; }
+    .preview-area { margin-top: 10px; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+    .preview-img { max-height: 120px; border-radius: 8px; border: 4px solid white; box-shadow: 2px 2px 8px rgba(0,0,0,0.3); }
+    .remove-preview-btn { background: #c7a99b; border: none; color: white; padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
+    .delete-entry-btn { background: #c7a99b; color: white; border: none; padding: 3px 12px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; }
+
+    .mood-picker { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+    .mood-btn { background: none; border: 2px solid transparent; font-size: 1.8rem; cursor: pointer; border-radius: 50%; padding: 2px; transition: all 0.2s; line-height: 1; }
+    .mood-btn:hover { transform: scale(1.2); }
+    .mood-btn.selected { border-color: #e31b23; background: #fce4e4; border-radius: 50%; }
+
+    .recap-section { margin-top: 30px; border-top: 3px solid #b9a689; padding-top: 20px; }
+    .recap-controls { display: flex; gap: 15px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
+    .recap-controls input { padding: 8px 12px; border-radius: 8px; border: 1px solid #c4b59a; background: #fffef7; }
+    .recap-controls select { padding: 8px 12px; border-radius: 8px; border: 1px solid #c4b59a; background: #fffef7; }
+    .recap-btn, .clear-recap-btn { border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+    .recap-btn { background: #b98b5f; color: white; } .clear-recap-btn { background: #d1bfae; color: #4e3e33; }
+    .empty-message { text-align: center; color: #8b7355; font-style: italic; font-size: 1.1rem; margin: 20px 0; }
+    h2, h3 { color: #4e3e33; margin-bottom: 12px; }
+    #imageInput, #signUpAvatarInput, #settingsAvatarInput { display: none; }
+
+    .chat-toggle-bar { background: #d4c3aa; border-radius: 15px 15px 0 0; margin-top: 20px; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; font-weight: bold; color: #4e3e33; user-select: none; }
+    .chat-panel { background: #fffef7; border: 2px solid #d4c3aa; border-top: none; border-radius: 0 0 15px 15px; max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; padding: 10px; }
+    .chat-message { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+    .chat-avatar { width: 35px; height: 35px; border-radius: 50%; background: #c4b09b; overflow: hidden; flex-shrink: 0; border: 2px solid white; display: flex; align-items: center; justify-content: center; }
+    .chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .chat-bubble { background: #f3ede5; border-radius: 12px; padding: 8px 12px; max-width: 70%; font-size: 0.95rem; color: #2e241b; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .chat-bubble .author { font-weight: bold; color: #6b4e3d; font-size: 0.8rem; margin-bottom: 2px; }
+    .chat-bubble .time { font-size: 0.7rem; color: #8b7355; margin-top: 4px; }
+    .chat-input-area { display: flex; gap: 10px; padding: 10px; background: #f3ede5; border-top: 1px solid #d4c3aa; }
+    .chat-input-area input { flex: 1; padding: 8px 12px; border-radius: 20px; border: 1px solid #c4b59a; outline: none; background: white; }
+    .chat-input-area button { background: #8f7a66; border: none; color: white; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; }
+    .settings-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; }
+    .settings-box { background: #faf3e8; padding: 25px; border-radius: 20px; width: 300px; position: relative; }
+    .settings-box h3 { margin-bottom: 15px; }
+    .settings-box input[type="text"] { width: 100%; padding: 8px; border-radius: 10px; border: 1px solid #c4b59a; margin-bottom: 12px; }
+    .settings-box button { padding: 8px 16px; border-radius: 20px; border: none; cursor: pointer; font-weight: bold; }
+    .close-btn { position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #4e3e33; }
+    .invite-form { display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; }
+
+    .watermark {
+      position: fixed; bottom: 8px; right: 12px; font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.35); font-family: 'Segoe UI', sans-serif;
+      pointer-events: none; z-index: 999; letter-spacing: 0.5px;
+    }
+    body.theme-night .watermark { color: rgba(255, 255, 255, 0.2); }
+    body.theme-romantic .watermark,
+    body.theme-forest .watermark,
+    body.theme-ocean .watermark,
+    body.theme-sunset .watermark,
+    body.theme-lavender .watermark { color: rgba(255, 255, 255, 0.4); }
+  </style>
+</head>
+<body>
+  <div class="desk" id="appRoot">
+    <div id="loginScreen" class="login-screen">
+      <h1 class="login-title">📖 Our Private Diaries</h1>
+      <div class="login-forms">
+        <div class="login-box">
+          <h3>Sign Up</h3>
+          <input type="text" id="signUpName" placeholder="Your name">
+          <input type="email" id="signUpEmail" placeholder="Email">
+          <input type="password" id="signUpPassword" placeholder="Password">
+          <label for="signUpAvatarInput" class="upload-label">📷 Choose Avatar (optional)</label>
+          <input type="file" id="signUpAvatarInput" accept="image/*">
+          <img id="signUpAvatarPreview" class="avatar-preview-small" alt="Avatar preview">
+          <button id="signUpBtn" class="btn-primary">Create Account</button>
+          <div style="text-align:center; margin:10px 0;">or</div>
+          <button id="googleSignUpBtn" class="btn-google">Sign up with Google</button>
+          <button id="facebookSignUpBtn" class="btn-facebook">Sign up with Facebook</button>
+          <button id="githubSignUpBtn" class="btn-github">Sign up with GitHub</button>
+          <button id="microsoftSignUpBtn" class="btn-microsoft">Sign up with Microsoft</button>
+          <button id="twitterSignUpBtn" class="btn-twitter">Sign up with Twitter</button>
+          <button id="yahooSignUpBtn" class="btn-yahoo">Sign up with Yahoo</button>
+          <button id="appleSignUpBtn" class="btn-apple">Sign up with Apple</button>
+          <div id="signUpError" class="error"></div>
+        </div>
+        <div class="login-box">
+          <h3>Log In</h3>
+          <input type="email" id="loginEmail" placeholder="Email">
+          <input type="password" id="loginPassword" placeholder="Password">
+          <button id="loginBtn" class="btn-primary">Enter Diary</button>
+          <div style="text-align:center; margin:10px 0;">or</div>
+          <button id="googleLoginBtn" class="btn-google">Sign in with Google</button>
+          <button id="facebookLoginBtn" class="btn-facebook">Sign in with Facebook</button>
+          <button id="githubLoginBtn" class="btn-github">Sign in with GitHub</button>
+          <button id="microsoftLoginBtn" class="btn-microsoft">Sign in with Microsoft</button>
+          <button id="twitterLoginBtn" class="btn-twitter">Sign in with Twitter</button>
+          <button id="yahooLoginBtn" class="btn-yahoo">Sign in with Yahoo</button>
+          <button id="appleLoginBtn" class="btn-apple">Sign in with Apple</button>
+          <div id="loginError" class="error"></div>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+        <button id="phoneSignInBtn" class="btn-phone" style="width:auto; padding:10px 20px;">📞 Sign in with Phone</button>
+        <button id="anonymousSignInBtn" class="btn-anon" style="width:auto; padding:10px 20px;">👻 Anonymous (testing)</button>
+      </div>
+    </div>
+
+    <div id="diaryUI" class="hidden">
+      <div class="user-bar">
+        <div class="user-info">
+          <div class="user-avatar" id="currentAvatar"><span style="font-size:1.5rem;">👤</span></div>
+          <span id="currentName" style="font-weight:bold; font-size:1.2rem; color:#4e3e33;"></span>
+        </div>
+        <div>
+          <button id="settingsBtn" class="settings-btn">⚙️</button>
+          <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+      </div>
+
+      <div class="partner-section" id="partnerSection"></div>
+
+      <div id="themePickerContainer" class="theme-picker hidden" style="margin-bottom:20px;">
+        <label for="themeSelect" style="font-weight:bold; color:#4e3e33;">🎨 Couple Theme: </label>
+        <select id="themeSelect">
+          <option value="classic">Classic Brown</option>
+          <option value="romantic">Romantic Pink</option>
+          <option value="night">Night Mode</option>
+          <option value="forest">Forest Green</option>
+          <option value="ocean">Ocean Blue</option>
+          <option value="sunset">Sunset Orange</option>
+          <option value="lavender">Lavender Purple</option>
+        </select>
+      </div>
+
+      <div class="special-dates-section hidden" id="specialDatesSection">
+        <div class="special-dates-toggle" id="specialDatesToggle">
+          <span>📅 Special Dates</span>
+          <span id="specialDatesToggleIcon">▼</span>
+        </div>
+        <div class="special-dates-list" id="specialDatesList"></div>
+        <div class="add-special-date-form">
+          <input type="text" id="specialDateTitle" placeholder="Title (e.g., Anniversary)">
+          <input type="date" id="specialDateInput">
+          <button id="addSpecialDateBtn">Add</button>
+        </div>
+      </div>
+
+      <div class="game-section hidden" id="gameSection">
+        <div class="game-toggle" id="gameToggle">
+          <span>🎮 Couple's Number Game</span>
+          <span id="gameToggleIcon">▼</span>
+        </div>
+        <div class="game-content" id="gameContent">
+          <div id="gameSetArea" class="game-set">
+            <input type="number" id="secretNumberInput" placeholder="Secret (1-100)" min="1" max="100">
+            <button id="setSecretBtn">Set Secret Number</button>
+          </div>
+          <div id="gameGuessArea" class="game-guess hidden">
+            <input type="number" id="guessInput" placeholder="Your guess" min="1" max="100">
+            <button id="guessBtn">Guess</button>
+          </div>
+          <div class="game-hints" id="gameHints"></div>
+        </div>
+      </div>
+
+      <div class="view-toggle">
+        <button id="myDiaryBtn" class="view-btn active">📖 My Diary</button>
+        <button id="sharedDiaryBtn" class="view-btn">💕 Our Shared Diary</button>
+      </div>
+
+      <div class="diary-container">
+        <div class="new-page-form">
+          <h3 id="formTitle">Write in your diary</h3>
+          <textarea id="entryText" placeholder="Dear diary..."></textarea>
+          <div class="form-actions">
+            <label for="imageInput" class="upload-label">📷 Attach Photo</label>
+            <input type="file" id="imageInput" accept="image/*">
+            <div id="shareCheckboxContainer" class="share-checkbox hidden">
+              <input type="checkbox" id="shareCheckbox">
+              <label for="shareCheckbox">✨ Share with partner</label>
+            </div>
+            <div class="mood-picker">
+              <span style="font-weight:bold; color:#4e3e33;">Mood:</span>
+              <button class="mood-btn" data-mood="😊">😊</button>
+              <button class="mood-btn" data-mood="😢">😢</button>
+              <button class="mood-btn" data-mood="😡">😡</button>
+              <button class="mood-btn" data-mood="🥰">🥰</button>
+              <button class="mood-btn" data-mood="😴">😴</button>
+              <button class="mood-btn" data-mood="😎">😎</button>
+            </div>
+            <button id="saveEntryBtn" class="save-page-btn">✨ Save Page</button>
+          </div>
+          <div id="imagePreview" class="preview-area"></div>
+        </div>
+
+        <div id="pagesContainer"></div>
+
+        <div class="recap-section">
+          <h2>🕰️ Memory Lane</h2>
+          <div class="recap-controls">
+            <label>From: <input type="date" id="recapStart"></label>
+            <label>To: <input type="date" id="recapEnd"></label>
+            <select id="recapType">
+              <option value="own">My Memories</option>
+              <option value="shared">Our Shared Memories</option>
+            </select>
+            <button id="showRecapBtn" class="recap-btn">Show</button>
+            <button id="clearRecapBtn" class="clear-recap-btn">Close</button>
+          </div>
+          <div id="recapContainer"></div>
+        </div>
+
+        <div class="chat-toggle-bar" id="chatToggle">
+          <span>💬 Our Chat</span>
+          <span id="toggleIcon">▲</span>
+        </div>
+        <div class="chat-panel" id="chatPanel">
+          <div id="chatMessages" style="flex:1; overflow-y:auto; padding:5px;"></div>
+          <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Type a message...">
+            <button id="sendChatBtn">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-modal hidden" id="settingsModal">
+    <div class="settings-box">
+      <button class="close-btn" id="closeSettingsBtn">&times;</button>
+      <h3>Edit Profile</h3>
+      <label>Name: <input type="text" id="settingsName"></label>
+      <label for="settingsAvatarInput">📷 Change Avatar</label>
+      <input type="file" id="settingsAvatarInput" accept="image/*">
+      <div id="settingsAvatarPreview" style="margin:10px 0;"></div>
+      <button id="saveSettingsBtn" style="background:#8f7a66; color:white;">Save</button>
+    </div>
+  </div>
+
+  <div class="watermark">Made by Saksham Paudel</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, where, orderBy, getDocs, onSnapshot, doc, setDoc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, 
+             GoogleAuthProvider, FacebookAuthProvider, GithubAuthProvider, OAuthProvider,
+             TwitterAuthProvider, signInWithPopup, signInWithPhoneNumber, RecaptchaVerifier,
+             signInAnonymously } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyASraZCVBuAjz3bF7Q1N5EEn3rhurVqnjk",
+      authDomain: "ourdiary-f64ef.firebaseapp.com",
+      projectId: "ourdiary-f64ef",
+      storageBucket: "ourdiary-f64ef.appspot.com",
+      messagingSenderId: "651473810928",
+      appId: "1:651473810928:web:be63cb5a155da410ae5935",
+      measurementId: "G-0SGNZ60DYL"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let currentUser = null;
+    let currentProfile = { name: '', avatar: '' };
+    let diaryMode = 'my';
+    let selectedImageData = null;
+    let tempSettingsAvatar = null;
+    let signUpAvatarData = null;
+    let partnerId = null;
+    let coupleId = null;
+    let partnerProfile = null;
+    let selectedMood = '';
+    let gameUnsubscribe = null;
+    let coupleThemeUnsubscribe = null;
+
+    const loginScreen = document.getElementById('loginScreen');
+    const diaryUI = document.getElementById('diaryUI');
+    const formTitle = document.getElementById('formTitle');
+    const pagesContainer = document.getElementById('pagesContainer');
+    const entryText = document.getElementById('entryText');
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const shareCheckboxContainer = document.getElementById('shareCheckboxContainer');
+    const shareCheckbox = document.getElementById('shareCheckbox');
+    const chatPanel = document.getElementById('chatPanel');
+    const recapType = document.getElementById('recapType');
+    const myDiaryBtn = document.getElementById('myDiaryBtn');
+    const sharedDiaryBtn = document.getElementById('sharedDiaryBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const currentName = document.getElementById('currentName');
+    const currentAvatar = document.getElementById('currentAvatar');
+    const partnerSection = document.getElementById('partnerSection');
+    const specialDatesSection = document.getElementById('specialDatesSection');
+    const specialDatesToggle = document.getElementById('specialDatesToggle');
+    const specialDatesList = document.getElementById('specialDatesList');
+    const specialDateTitle = document.getElementById('specialDateTitle');
+    const specialDateInput = document.getElementById('specialDateInput');
+    const addSpecialDateBtn = document.getElementById('addSpecialDateBtn');
+    const themePickerContainer = document.getElementById('themePickerContainer');
+    const themeSelect = document.getElementById('themeSelect');
+    const gameSection = document.getElementById('gameSection');
+    const gameToggle = document.getElementById('gameToggle');
+    const gameContent = document.getElementById('gameContent');
+    const gameSetArea = document.getElementById('gameSetArea');
+    const gameGuessArea = document.getElementById('gameGuessArea');
+    const secretNumberInput = document.getElementById('secretNumberInput');
+    const setSecretBtn = document.getElementById('setSecretBtn');
+    const guessInput = document.getElementById('guessInput');
+    const guessBtn = document.getElementById('guessBtn');
+    const gameHints = document.getElementById('gameHints');
+
+    const moodButtons = document.querySelectorAll('.mood-btn');
+    moodButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        moodButtons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedMood = btn.dataset.mood;
+      });
+    });
+
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const signUpAvatarInput = document.getElementById('signUpAvatarInput');
+    const signUpAvatarPreview = document.getElementById('signUpAvatarPreview');
+    signUpAvatarInput.addEventListener('change', async function() {
+      const file = this.files[0];
+      if (file) {
+        signUpAvatarData = await readFileAsDataURL(file);
+        signUpAvatarPreview.src = signUpAvatarData;
+        signUpAvatarPreview.style.display = 'block';
+      } else {
+        signUpAvatarData = null;
+        signUpAvatarPreview.style.display = 'none';
+      }
+    });
+
+    imageInput.addEventListener('change', async function() {
+      const file = this.files[0];
+      if (!file) { selectedImageData = null; imagePreview.innerHTML = ''; return; }
+      selectedImageData = await readFileAsDataURL(file);
+      imagePreview.innerHTML = `<img src="${selectedImageData}" class="preview-img" alt="preview"><button class="remove-preview-btn" id="removePreviewBtn">✕ Remove</button>`;
+      document.getElementById('removePreviewBtn').addEventListener('click', () => {
+        selectedImageData = null; imageInput.value = ''; imagePreview.innerHTML = '';
+      });
+    });
+
+    document.getElementById('settingsAvatarInput').addEventListener('change', async function() {
+      const file = this.files[0];
+      if (file) {
+        tempSettingsAvatar = await readFileAsDataURL(file);
+        document.getElementById('settingsAvatarPreview').innerHTML = `<img src="${tempSettingsAvatar}" style="height:60px; border-radius:50%;">`;
+      }
+    });
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    async function createProfileIfNeeded(user) {
+      const profileDoc = await getDoc(doc(db, "profiles", user.uid));
+      if (!profileDoc.exists()) {
+        const defaultName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+        let avatarUrl = '';
+        if (user.photoURL) avatarUrl = user.photoURL;
+        await setDoc(doc(db, "profiles", user.uid), { name: defaultName, avatar: avatarUrl });
+      }
+      if (user.email) {
+        await setDoc(doc(db, "emails", user.email), { uid: user.uid }, { merge: true });
+      }
+    }
+
+    function applyTheme(theme) {
+      document.body.classList.remove('theme-classic', 'theme-romantic', 'theme-night', 'theme-forest', 'theme-ocean', 'theme-sunset', 'theme-lavender');
+      if (theme) document.body.classList.add(`theme-${theme}`);
+    }
+
+    async function updateCoupleTheme(theme) {
+      if (!coupleId) return;
+      await updateDoc(doc(db, "couples", coupleId), { theme: theme });
+    }
+
+    function listenToCoupleTheme() {
+      if (!coupleId) return;
+      if (coupleThemeUnsubscribe) coupleThemeUnsubscribe();
+      coupleThemeUnsubscribe = onSnapshot(doc(db, "couples", coupleId), (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.theme) {
+            applyTheme(data.theme);
+            if (themeSelect.value !== data.theme) themeSelect.value = data.theme;
+          } else {
+            applyTheme('classic');
+            themeSelect.value = 'classic';
+          }
+        }
+      });
+    }
+
+    themeSelect.addEventListener('change', () => {
+      const newTheme = themeSelect.value;
+      applyTheme(newTheme);
+      updateCoupleTheme(newTheme);
+    });
+
+    function cleanupListeners() {
+      if (gameUnsubscribe) { gameUnsubscribe(); gameUnsubscribe = null; }
+      if (coupleThemeUnsubscribe) { coupleThemeUnsubscribe(); coupleThemeUnsubscribe = null; }
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        try {
+          const profileDoc = await getDoc(doc(db, "profiles", user.uid));
+          if (profileDoc.exists()) {
+            currentProfile = profileDoc.data();
+            coupleId = currentProfile.coupleId || null;
+            partnerId = currentProfile.partnerId || null;
+            if (partnerId) {
+              try {
+                const partnerDoc = await getDoc(doc(db, "profiles", partnerId));
+                partnerProfile = partnerDoc.exists() ? partnerDoc.data() : null;
+              } catch (e) {
+                console.warn("Couldn't read partner profile, retrying later.");
+                partnerProfile = null;
+              }
+            } else {
+              partnerProfile = null;
+            }
+          } else {
+            currentProfile = { name: user.email ? user.email.split('@')[0] : 'User', avatar: '' };
+            await setDoc(doc(db, "profiles", user.uid), currentProfile);
+          }
+        } catch (e) {
+          console.warn("Error loading own profile, using fallback.");
+          currentProfile = { name: user.email ? user.email.split('@')[0] : 'User', avatar: '' };
+        }
+        await showDiaryUI();
+      } else {
+        currentUser = null;
+        showLoginScreen();
+      }
+    });
+
+    function showLoginScreen() { loginScreen.classList.remove('hidden'); diaryUI.classList.add('hidden'); }
+
+    async function showDiaryUI() {
+      loginScreen.classList.add('hidden');
+      diaryUI.classList.remove('hidden');
+      cleanupListeners();
+      diaryMode = 'my';
+      selectedMood = '';
+      document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+      updateViewToggle();
+      updateDiaryHeader();
+      updateFormTitle();
+      updateShareCheckboxVisibility();
+
+      if (coupleId) {
+        try {
+          const coupleDoc = await getDoc(doc(db, "couples", coupleId));
+          if (coupleDoc.exists() &&
+              (coupleDoc.data().member1 === currentUser.uid || coupleDoc.data().member2 === currentUser.uid)) {
+            themePickerContainer.classList.remove('hidden');
+            listenToCoupleTheme();
+            specialDatesSection.classList.remove('hidden');
+            loadSpecialDates();
+            gameSection.classList.remove('hidden');
+            loadGameState();
+          } else {
+            await updateDoc(doc(db, "profiles", currentUser.uid), { coupleId: null, partnerId: null });
+            coupleId = null; partnerId = null; partnerProfile = null;
+            themePickerContainer.classList.add('hidden');
+            specialDatesSection.classList.add('hidden');
+            gameSection.classList.add('hidden');
+            applyTheme('classic');
+            renderPartnerSection();
+            listenForPartnerLink();
+          }
+        } catch (e) {
+          coupleId = null; partnerId = null; partnerProfile = null;
+          themePickerContainer.classList.add('hidden');
+          specialDatesSection.classList.add('hidden');
+          gameSection.classList.add('hidden');
+          applyTheme('classic');
+          renderPartnerSection();
+          listenForPartnerLink();
+        }
+      } else {
+        themePickerContainer.classList.add('hidden');
+        specialDatesSection.classList.add('hidden');
+        gameSection.classList.add('hidden');
+        applyTheme('classic');
+        renderPartnerSection();
+        listenForPartnerLink();
+      }
+
+      renderCurrentDiary();
+      renderChat();
+      chatPanel.classList.remove('hidden');
+      listenToChat();
+    }
+
+    // Partner auto‑link listener (only when user is not already in a couple)
+    function listenForPartnerLink() {
+      if (coupleId) return; // already coupled
+      const q = query(collection(db, "couples"), where("member2", "==", currentUser.uid));
+      const unsub = onSnapshot(q, async (snapshot) => {
+        for (const change of snapshot.docChanges()) {
+          if (change.type === "added") {
+            const coupleData = change.doc.data();
+            const coupleIdNew = change.doc.id;
+            const partnerUid = coupleData.member1;
+
+            // Update own profile (self‑write – always allowed)
+            await updateDoc(doc(db, "profiles", currentUser.uid), {
+              coupleId: coupleIdNew,
+              partnerId: partnerUid
+            });
+
+            // Update local state
+            coupleId = coupleIdNew;
+            partnerId = partnerUid;
+            const partnerDoc = await getDoc(doc(db, "profiles", partnerUid));
+            partnerProfile = partnerDoc.exists() ? partnerDoc.data() : null;
+
+            // Refresh UI
+            renderPartnerSection();
+            updateShareCheckboxVisibility();
+            updateFormTitle();
+            themePickerContainer.classList.remove('hidden');
+            specialDatesSection.classList.remove('hidden');
+            gameSection.classList.remove('hidden');
+            listenToCoupleTheme();
+            loadSpecialDates();
+            loadGameState();
+            listenToChat();
+
+            // Stop listening
+            unsub();
+            break;
+          }
+        }
+      });
+    }
+
+    function updateDiaryHeader() {
+      currentName.textContent = currentProfile.name;
+      if (currentProfile.avatar) currentAvatar.innerHTML = `<img src="${currentProfile.avatar}" alt="avatar">`;
+      else currentAvatar.innerHTML = '<span style="font-size:1.5rem;">👤</span>';
+    }
+    function updateFormTitle() {
+      formTitle.textContent = diaryMode === 'shared' ? (partnerProfile ? `💕 Our Shared Diary with ${partnerProfile.name}` : 'Our Shared Diary') : `Write in ${currentProfile.name}'s Diary`;
+    }
+    function updateShareCheckboxVisibility() {
+      if (diaryMode === 'my' && coupleId) {
+        shareCheckboxContainer.classList.remove('hidden');
+        shareCheckboxContainer.querySelector('label').textContent = partnerProfile ? `✨ Share with ${partnerProfile.name}` : '✨ Share with partner';
+      } else {
+        shareCheckboxContainer.classList.add('hidden');
+      }
+    }
+
+    function renderPartnerSection() {
+      if (coupleId && partnerProfile) {
+        partnerSection.innerHTML = `
+          <div class="partner-card">
+            <span class="heart-icon">❤️</span>
+            <div class="partner-avatar">${partnerProfile.avatar ? `<img src="${partnerProfile.avatar}" alt="avatar">` : '👤'}</div>
+            <span class="partner-name">${escapeHtml(partnerProfile.name)}</span>
+            <span class="heart-icon">❤️</span>
+          </div>
+          <p style="margin-top: 10px; color: #6b4e3d;">You and ${escapeHtml(partnerProfile.name)} are connected. 💕</p>
+          <button id="leaveCoupleBtn" style="background:#c7a99b; color:white; border:none; padding:5px 15px; border-radius:20px; margin-top:5px; cursor:pointer;">Leave Couple</button>
+        `;
+        document.getElementById('leaveCoupleBtn').addEventListener('click', leaveCouple);
+        return;
+      }
+      partnerSection.innerHTML = `
+        <p>You're not connected with a partner yet. 💔</p>
+        <div class="invite-form">
+          <input type="email" id="partnerEmail" placeholder="Partner's email" style="padding:8px; border-radius:10px; border:1px solid #c4b59a; width:200px;">
+          <button id="connectBtn" style="background:#e31b23; color:white; border:none; padding:8px 20px; border-radius:20px; cursor:pointer;">💌 Connect Now</button>
+        </div>
+        <div id="inviteError" class="error"></div>
+      `;
+      document.getElementById('connectBtn').addEventListener('click', connectPartner);
+    }
+
+    async function connectPartner() {
+      const email = document.getElementById('partnerEmail').value.trim();
+      if (!email) return alert("Please enter your partner's email.");
+
+      const emailDoc = await getDoc(doc(db, "emails", email));
+      if (!emailDoc.exists()) return alert("No account found with that email.");
+      const partnerUid = emailDoc.data().uid;
+      if (partnerUid === currentUser.uid) return alert("You cannot connect with yourself!");
+
+      // Check that you are not already coupled
+      if (coupleId) return alert("You are already in a couple. Leave first.");
+
+      // Check that partner is not already in a couple
+      const partnerProfileSnap = await getDoc(doc(db, "profiles", partnerUid));
+      if (partnerProfileSnap.exists() && partnerProfileSnap.data().coupleId) {
+        return alert("Your partner is already in a couple.");
+      }
+
+      // Create the couple document
+      const coupleRef = doc(collection(db, "couples"));
+      await setDoc(coupleRef, {
+        member1: currentUser.uid,
+        member2: partnerUid,
+        createdAt: new Date().toISOString(),
+        theme: 'classic'
+      });
+
+      const coupleIdNew = coupleRef.id;
+
+      // Update initiator's own profile (self‑write – always allowed)
+      await updateDoc(doc(db, "profiles", currentUser.uid), {
+        coupleId: coupleIdNew,
+        partnerId: partnerUid
+      });
+
+      // Update local state
+      coupleId = coupleIdNew;
+      partnerId = partnerUid;
+      const freshPartnerDoc = await getDoc(doc(db, "profiles", partnerUid));
+      partnerProfile = freshPartnerDoc.exists() ? freshPartnerDoc.data() : null;
+
+      // Show couple UI immediately for the initiator
+      renderPartnerSection();
+      updateShareCheckboxVisibility();
+      updateFormTitle();
+      themePickerContainer.classList.remove('hidden');
+      specialDatesSection.classList.remove('hidden');
+      gameSection.classList.remove('hidden');
+      listenToCoupleTheme();
+      loadSpecialDates();
+      loadGameState();
+      listenToChat();
+
+      document.getElementById('partnerEmail').value = '';
+      alert('Connected! Your partner just needs to refresh the diary.');
+    }
+
+    async function leaveCouple() {
+      if (!confirm("Are you sure you want to leave your couple? This will remove the connection for both.")) return;
+      cleanupListeners();
+
+      const messagesSnap = await getDocs(collection(db, "couples", coupleId, "messages"));
+      await Promise.all(messagesSnap.docs.map(d => deleteDoc(d.ref)));
+
+      const gameSnap = await getDocs(collection(db, "couples", coupleId, "game"));
+      await Promise.all(gameSnap.docs.map(d => deleteDoc(d.ref)));
+
+      const specialDatesSnap = await getDocs(query(collection(db, "specialDates"), where("coupleId", "==", coupleId)));
+      await Promise.all(specialDatesSnap.docs.map(d => deleteDoc(d.ref)));
+
+      await deleteDoc(doc(db, "couples", coupleId));
+
+      await updateDoc(doc(db, "profiles", currentUser.uid), { coupleId: null, partnerId: null });
+
+      coupleId = null; partnerId = null; partnerProfile = null;
+      renderPartnerSection(); updateShareCheckboxVisibility(); updateFormTitle();
+      themePickerContainer.classList.add('hidden'); specialDatesSection.classList.add('hidden'); gameSection.classList.add('hidden');
+      applyTheme('classic'); renderCurrentDiary();
+    }
+
+    // ---------- Special Dates (with confetti) ----------
+    let specialDatesOpen = true;
+    specialDatesToggle.addEventListener('click', () => {
+      specialDatesOpen = !specialDatesOpen;
+      specialDatesList.classList.toggle('hidden', !specialDatesOpen);
+      document.getElementById('specialDatesToggleIcon').textContent = specialDatesOpen ? '▼' : '▲';
+    });
+    async function loadSpecialDates() {
+      try {
+        if (!coupleId) return;
+        const q = query(collection(db, "specialDates"), where("coupleId", "==", coupleId), orderBy("date", "asc"));
+        const snap = await getDocs(q);
+        const dates = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderSpecialDates(dates);
+      } catch (e) { console.warn('Special dates skipped:', e); }
+    }
+    function renderSpecialDates(dates) {
+      if (dates.length === 0) { specialDatesList.innerHTML = '<div class="empty-message">No special dates yet. Add your first one!</div>'; return; }
+      const now = new Date(); now.setHours(0,0,0,0);
+      let hasToday = false;
+      specialDatesList.innerHTML = dates.map(d => {
+        const date = new Date(d.date); date.setHours(0,0,0,0);
+        const diffDays = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        let txt = ''; if (diffDays === 0) { txt = '🎉 Today!'; hasToday = true; } else if (diffDays < 0) txt = `${Math.abs(diffDays)} days ago`; else txt = `${diffDays} days`;
+        return `<div class="special-date-item"><span class="special-date-title">${escapeHtml(d.title)}</span><span class="special-date-countdown">${txt}</span><button class="special-date-delete" data-id="${d.id}">✕</button></div>`;
+      }).join('');
+      if (hasToday && typeof confetti !== 'undefined') {
+        confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+        setTimeout(() => { confetti({ particleCount: 100, angle: 60, spread: 80, origin: { x: 0 } }); confetti({ particleCount: 100, angle: 120, spread: 80, origin: { x: 1 } }); }, 500);
+      }
+      document.querySelectorAll('.special-date-delete').forEach(btn => btn.addEventListener('click', async (e) => { e.stopPropagation(); if (confirm('Delete this special date?')) { await deleteDoc(doc(db, "specialDates", btn.dataset.id)); loadSpecialDates(); } }));
+    }
+    addSpecialDateBtn.addEventListener('click', async () => {
+      const title = specialDateTitle.value.trim(), dateVal = specialDateInput.value;
+      if (!title || !dateVal) return alert('Please fill in both fields.');
+      await addDoc(collection(db, "specialDates"), { coupleId, title, date: new Date(dateVal).toISOString(), createdBy: currentUser.uid, createdAt: new Date().toISOString() });
+      specialDateTitle.value = ''; specialDateInput.value = ''; loadSpecialDates();
+    });
+
+    // ---------- Minigame ----------
+    let gameOpen = true;
+    gameToggle.addEventListener('click', () => { gameOpen = !gameOpen; gameContent.classList.toggle('hidden', !gameOpen); document.getElementById('gameToggleIcon').textContent = gameOpen ? '▼' : '▲'; });
+    async function loadGameState() {
+      try {
+        if (!coupleId) return;
+        if (gameUnsubscribe) gameUnsubscribe();
+        gameUnsubscribe = onSnapshot(doc(db, "couples", coupleId, "game", "current"), (docSnap) => {
+          if (docSnap.exists()) renderGame(docSnap.data());
+          else { gameSetArea.classList.remove('hidden'); gameGuessArea.classList.add('hidden'); gameHints.innerHTML = ''; }
+        });
+      } catch (e) { console.warn('Game listener skipped:', e); }
+    }
+    function renderGame(gameData) {
+      if (!gameData || gameData.status === 'won') { gameSetArea.classList.remove('hidden'); gameGuessArea.classList.add('hidden'); gameHints.innerHTML = ''; return; }
+      if (gameData.setterUid === currentUser.uid) { gameSetArea.classList.add('hidden'); gameGuessArea.classList.add('hidden'); gameHints.innerHTML = '<p>Waiting for your partner to guess...</p>'; }
+      else {
+        gameSetArea.classList.add('hidden'); gameGuessArea.classList.remove('hidden');
+        let html = ''; if (gameData.guesses) html = gameData.guesses.map(g => `<div class="game-hint-item"><strong>${g.uid === currentUser.uid ? 'You' : (partnerProfile?.name || 'Partner')}</strong> guessed ${g.guess} → ${g.hint}</div>`).join('');
+        gameHints.innerHTML = html;
+      }
+      if (gameData.status === 'won') {
+        confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
+        setTimeout(() => { confetti({ particleCount: 100, angle: 60, spread: 80, origin: { x: 0 } }); confetti({ particleCount: 100, angle: 120, spread: 80, origin: { x: 1 } }); }, 500);
+        setTimeout(async () => { await deleteDoc(doc(db, "couples", coupleId, "game", "current")); }, 2000);
+      }
+    }
+    setSecretBtn.addEventListener('click', async () => {
+      const secret = parseInt(secretNumberInput.value);
+      if (isNaN(secret) || secret < 1 || secret > 100) return alert('Enter a number between 1 and 100.');
+      await setDoc(doc(db, "couples", coupleId, "game", "current"), { secretNumber: secret, setterUid: currentUser.uid, guesses: [], status: 'playing', createdAt: new Date().toISOString() });
+      secretNumberInput.value = '';
+    });
+    guessBtn.addEventListener('click', async () => {
+      const guess = parseInt(guessInput.value);
+      if (isNaN(guess) || guess < 1 || guess > 100) return alert('Enter a number between 1 and 100.');
+      const ref = doc(db, "couples", coupleId, "game", "current");
+      const snap = await getDoc(ref);
+      if (!snap.exists() || snap.data().status !== 'playing') return;
+      const gd = snap.data(); const secret = gd.secretNumber;
+      let hint = ''; if (guess === secret) hint = 'Correct! 🎉'; else if (guess < secret) hint = 'Higher ⬆️'; else hint = 'Lower ⬇️';
+      await updateDoc(ref, { guesses: [...gd.guesses, { uid: currentUser.uid, guess, hint }], status: guess === secret ? 'won' : 'playing' });
+      guessInput.value = '';
+    });
+
+    // ---------- Diary entries (with mood + delete) ----------
+    async function getEntriesForCurrentView() {
+      if (!currentUser) return [];
+      if (diaryMode === 'shared') {
+        if (!coupleId) return [];
+        const q = query(collection(db, "entries"), where("coupleId", "==", coupleId), where("shared", "==", true), orderBy("timestamp", "desc"));
+        const snap = await getDocs(q);
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } else {
+        const q = query(collection(db, "entries"), where("authorId", "==", currentUser.uid), orderBy("timestamp", "desc"));
+        const snap = await getDocs(q);
+        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      }
+    }
+
+    async function deleteEntry(entryId) {
+      try {
+        await deleteDoc(doc(db, "entries", entryId));
+        renderCurrentDiary();
+      } catch (error) {
+        console.error('Delete failed:', error);
+        alert('Could not delete entry: ' + error.message);
+      }
+    }
+
+    async function renderCurrentDiary() {
+      try {
+        const entries = await getEntriesForCurrentView();
+        if (entries.length === 0) {
+          pagesContainer.innerHTML = '<div class="empty-message">📄 No pages yet.</div>';
+          return;
+        }
+        pagesContainer.innerHTML = entries.map(entry => `
+          <div class="paper-page">
+            ${entry.shared ? '<span class="shared-badge">💕 shared</span>' : ''}
+            <div class="page-meta">
+              <span class="author-tag">
+                ${entry.mood ? `<span class="mood-icon">${entry.mood}</span>` : ''}
+                ${escapeHtml(entry.authorName)}
+              </span>
+              <span>${new Date(entry.timestamp).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</span>
+            </div>
+            ${entry.text ? `<div>${escapeHtml(entry.text)}</div>` : ''}
+            ${entry.image ? `<img src="${entry.image}" alt="photo">` : ''}
+            ${(!entry.shared && entry.authorId === currentUser.uid && diaryMode === 'my') ? `
+              <button class="delete-entry-btn" data-id="${entry.id}" style="position:absolute; bottom:10px; right:15px;">🗑️ Delete</button>
+            ` : ''}
+          </div>
+        `).join('');
+
+        document.querySelectorAll('.delete-entry-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const entryId = btn.dataset.id;
+            if (confirm('Delete this private entry? This cannot be undone.')) {
+              await deleteEntry(entryId);
+            }
+          });
+        });
+      } catch (err) {
+        console.error(err);
+        if (err.code === 'failed-precondition' && err.message.includes('index')) {
+          alert('Please create the required index. Click the link in the console.');
+        }
+      }
+    }
+
+    document.getElementById('saveEntryBtn').addEventListener('click', async () => {
+      const text = entryText.value.trim();
+      if (!text && !selectedImageData) return alert('Write something or attach a photo.');
+      const shared = diaryMode === 'shared' ? true : (shareCheckbox.checked && coupleId ? true : false);
+      await addDoc(collection(db, "entries"), {
+        authorId: currentUser.uid,
+        authorName: currentProfile.name,
+        coupleId: coupleId || null,
+        text,
+        image: selectedImageData || null,
+        timestamp: new Date().toISOString(),
+        shared,
+        mood: selectedMood
+      });
+      entryText.value = ''; imageInput.value = ''; selectedImageData = null; imagePreview.innerHTML = ''; shareCheckbox.checked = false; selectedMood = '';
+      document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+      renderCurrentDiary();
+    });
+
+    // ---------- Recap ----------
+    document.getElementById('showRecapBtn').addEventListener('click', async () => {
+      const startVal = document.getElementById('recapStart').value;
+      const endVal = document.getElementById('recapEnd').value;
+      const container = document.getElementById('recapContainer');
+      if (!startVal || !endVal) return container.innerHTML = '<p style="color:#b63e3e;">Pick both dates.</p>';
+      const start = new Date(startVal);
+      const end = new Date(endVal); end.setHours(23,59,59,999);
+      const type = recapType.value;
+      let q;
+      if (type === 'own') q = query(collection(db, "entries"), where("authorId", "==", currentUser.uid), orderBy("timestamp", "asc"));
+      else if (type === 'shared') {
+        if (!coupleId) return container.innerHTML = '<div class="empty-message">You are not in a couple yet.</div>';
+        q = query(collection(db, "entries"), where("coupleId", "==", coupleId), where("shared", "==", true), orderBy("timestamp", "asc"));
+      } else return;
+      try {
+        const snap = await getDocs(q);
+        const filtered = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(e => {
+          const d = new Date(e.timestamp); return d >= start && d <= end;
+        });
+        if (!filtered.length) return container.innerHTML = '<div class="empty-message">📭 No memories.</div>';
+        container.innerHTML = '<h3>📖 Memories</h3>' + filtered.map(entry => `
+          <div class="paper-page">
+            ${entry.shared ? '<span class="shared-badge">💕 shared</span>' : ''}
+            <div class="page-meta">
+              <span class="author-tag">
+                ${entry.mood ? `<span class="mood-icon">${entry.mood}</span>` : ''}
+                ${escapeHtml(entry.authorName)}
+              </span>
+              <span>${new Date(entry.timestamp).toLocaleString()}</span>
+            </div>
+            ${entry.text ? `<div>${escapeHtml(entry.text)}</div>` : ''}
+            ${entry.image ? `<img src="${entry.image}" alt="photo">` : ''}
+          </div>
+        `).join('');
+      } catch (err) { console.error(err); }
+    });
+    document.getElementById('clearRecapBtn').addEventListener('click', () => {
+      document.getElementById('recapContainer').innerHTML = '';
+      document.getElementById('recapStart').value = '';
+      document.getElementById('recapEnd').value = '';
+    });
+
+    // ---------- Chat ----------
+    let chatOpen = true;
+    document.getElementById('chatToggle').addEventListener('click', () => {
+      chatOpen = !chatOpen;
+      chatPanel.classList.toggle('hidden', !chatOpen);
+      document.getElementById('toggleIcon').textContent = chatOpen ? '▲' : '▼';
+    });
+    function renderChat() {
+      document.getElementById('chatMessages').innerHTML = '<div style="color:#8b7355; text-align:center; padding:10px;">Loading chat...</div>';
+    }
+    function listenToChat() {
+      if (!coupleId) {
+        document.getElementById('chatMessages').innerHTML = '<div style="color:#8b7355; text-align:center; padding:10px;">Connect with a partner to unlock the chat.</div>';
+        return;
+      }
+      const chatQuery = query(collection(db, "couples", coupleId, "messages"), orderBy("timestamp", "asc"));
+      onSnapshot(chatQuery, snap => {
+        const msgs = []; snap.forEach(d => msgs.push({ id: d.id, ...d.data() }));
+        renderChatMessages(msgs);
+      });
+    }
+    function renderChatMessages(msgs) {
+      const c = document.getElementById('chatMessages');
+      if (!msgs.length) c.innerHTML = '<div style="color:#8b7355; text-align:center; padding:10px;">No messages yet. Say something sweet!</div>';
+      else {
+        c.innerHTML = msgs.map(m => `
+          <div class="chat-message">
+            <div class="chat-avatar">${m.avatar ? `<img src="${m.avatar}">` : '👤'}</div>
+            <div class="chat-bubble"><div class="author">${escapeHtml(m.authorName)}</div><div>${escapeHtml(m.text)}</div><div class="time">${new Date(m.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div></div>
+          </div>`).join('');
+      }
+      c.scrollTop = c.scrollHeight;
+    }
+    async function sendMessage() {
+      if (!coupleId) return;
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      await addDoc(collection(db, "couples", coupleId, "messages"), {
+        authorId: currentUser.uid,
+        authorName: currentProfile.name,
+        avatar: currentProfile.avatar || '',
+        text,
+        timestamp: new Date().toISOString()
+      });
+      input.value = '';
+    }
+    document.getElementById('sendChatBtn').addEventListener('click', sendMessage);
+    document.getElementById('chatInput').addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+
+    // ---------- View toggle ----------
+    myDiaryBtn.addEventListener('click', () => { diaryMode = 'my'; updateViewToggle(); updateFormTitle(); updateShareCheckboxVisibility(); renderCurrentDiary(); });
+    sharedDiaryBtn.addEventListener('click', () => { diaryMode = 'shared'; updateViewToggle(); updateFormTitle(); updateShareCheckboxVisibility(); renderCurrentDiary(); });
+    function updateViewToggle() {
+      myDiaryBtn.classList.toggle('active', diaryMode === 'my');
+      sharedDiaryBtn.classList.toggle('active', diaryMode === 'shared');
+    }
+
+    // ---------- Settings ----------
+    document.getElementById('settingsBtn').addEventListener('click', () => {
+      document.getElementById('settingsName').value = currentProfile.name;
+      document.getElementById('settingsAvatarPreview').innerHTML = currentProfile.avatar ? `<img src="${currentProfile.avatar}" style="height:60px; border-radius:50%;">` : '';
+      tempSettingsAvatar = null;
+      settingsModal.classList.remove('hidden');
+    });
+    document.getElementById('closeSettingsBtn').addEventListener('click', () => settingsModal.classList.add('hidden'));
+    document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+      const name = document.getElementById('settingsName').value.trim() || 'User';
+      let avatar = currentProfile.avatar;
+      if (tempSettingsAvatar) avatar = tempSettingsAvatar;
+      currentProfile = { name, avatar, coupleId: currentProfile.coupleId || null, partnerId: currentProfile.partnerId || null };
+      await setDoc(doc(db, "profiles", currentUser.uid), currentProfile);
+      updateDiaryHeader();
+      updateFormTitle();
+      settingsModal.classList.add('hidden');
+    });
+
+    // ---------- Social Sign‑in ----------
+    async function handleSocialSignIn(provider) {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        await createProfileIfNeeded(result.user);
+      } catch (error) {
+        console.error(error);
+        if (error.code === 'auth/account-exists-with-different-credential') alert('Account exists with different method.');
+        else alert('Sign‑in failed: ' + error.message);
+      }
+    }
+
+    document.getElementById('googleSignUpBtn').addEventListener('click', () => { const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: 'select_account' }); handleSocialSignIn(p); });
+    document.getElementById('googleLoginBtn').addEventListener('click', () => { const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: 'select_account' }); handleSocialSignIn(p); });
+
+    document.getElementById('facebookSignUpBtn').addEventListener('click', () => { const p = new FacebookAuthProvider(); p.addScope('email'); p.addScope('public_profile'); p.setCustomParameters({ display: 'popup' }); handleSocialSignIn(p); });
+    document.getElementById('facebookLoginBtn').addEventListener('click', () => { const p = new FacebookAuthProvider(); p.addScope('email'); p.addScope('public_profile'); p.setCustomParameters({ display: 'popup' }); handleSocialSignIn(p); });
+
+    document.getElementById('githubSignUpBtn').addEventListener('click', () => handleSocialSignIn(new GithubAuthProvider()));
+    document.getElementById('githubLoginBtn').addEventListener('click', () => handleSocialSignIn(new GithubAuthProvider()));
+    document.getElementById('microsoftSignUpBtn').addEventListener('click', () => handleSocialSignIn(new OAuthProvider('microsoft.com')));
+    document.getElementById('microsoftLoginBtn').addEventListener('click', () => handleSocialSignIn(new OAuthProvider('microsoft.com')));
+    document.getElementById('twitterSignUpBtn').addEventListener('click', () => handleSocialSignIn(new TwitterAuthProvider()));
+    document.getElementById('twitterLoginBtn').addEventListener('click', () => handleSocialSignIn(new TwitterAuthProvider()));
+    document.getElementById('yahooSignUpBtn').addEventListener('click', () => handleSocialSignIn(new OAuthProvider('yahoo.com')));
+    document.getElementById('yahooLoginBtn').addEventListener('click', () => handleSocialSignIn(new OAuthProvider('yahoo.com')));
+    document.getElementById('appleSignUpBtn').addEventListener('click', () => handleSocialSignIn(new OAuthProvider('apple.com')));
+    document.getElementById('appleLoginBtn').addEventListener('click', () => handleSocialSignIn(new OAuthProvider('apple.com')));
+
+    document.getElementById('phoneSignInBtn').addEventListener('click', async () => {
+      const ph = prompt('Phone (+1234567890):'); if (!ph) return;
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'phoneSignInBtn', { size: 'invisible' });
+      try { const cr = await signInWithPhoneNumber(auth, ph, window.recaptchaVerifier); const code = prompt('SMS code:'); if (code) await cr.confirm(code); }
+      catch (e) { alert('Phone sign‑in failed: ' + e.message); }
+    });
+    document.getElementById('anonymousSignInBtn').addEventListener('click', async () => { try { await signInAnonymously(auth); } catch (e) { alert('Failed: ' + e.message); } });
+
+    // Email/Password
+    document.getElementById('signUpBtn').addEventListener('click', async () => {
+      const name = document.getElementById('signUpName').value.trim(), email = document.getElementById('signUpEmail').value.trim(), password = document.getElementById('signUpPassword').value, err = document.getElementById('signUpError');
+      if (!name) return err.textContent = "Please enter a name.";
+      try {
+        const uc = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, "profiles", uc.user.uid), { name, avatar: signUpAvatarData || '' });
+        await setDoc(doc(db, "emails", email), { uid: uc.user.uid });
+        err.textContent = ''; document.getElementById('signUpName').value = ''; document.getElementById('signUpEmail').value = ''; document.getElementById('signUpPassword').value = '';
+        signUpAvatarData = null; signUpAvatarPreview.style.display = 'none';
+      } catch (ex) { err.textContent = ex.message; }
+    });
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const email = document.getElementById('loginEmail').value.trim(), password = document.getElementById('loginPassword').value, err = document.getElementById('loginError');
+      try { await signInWithEmailAndPassword(auth, email, password); err.textContent = ''; } catch (ex) { err.textContent = ex.message; }
+    });
+    document.getElementById('logoutBtn').addEventListener('click', async () => { await signOut(auth); });
+
+    showLoginScreen();
+  </script>
+</body>
+</html>
